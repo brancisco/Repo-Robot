@@ -7,23 +7,41 @@ import math
 
 est_pose_x = 0 #set the previous known location here
 est_pose_y = 0 #set the previous known location here
-est_theta = 60 #set the previous known theta here
+est_theta = 0 #set the previous known theta here
+left_wheel_rotating = 0
+right_wheel_rotating = 0
+robot_speed = 0.0278
+cycle_time = .100 
+axle_diameter = 0.0865
+pi = 3.14159
+left_speed_pct = 0
+right_speed_pct = 0
 
 #Functions to control sparki
 def move_forward():
 	ser.write(b'1')
+	left_wheel_rotating = 1
+	right_wheel_rotating = 1
 
 def move_backward():
 	ser.write(b'2')
 
 def move_right():
 	ser.write(b'3')
+	left_wheel_rotating = 1
+	right_wheel_rotating = 0
 
 def move_left():
 	ser.write(b'4')
+	left_wheel_rotating = 0
+	right_wheel_rotating = 1
 
 def move_stop():
 	ser.write(b'5')
+	left_wheel_rotating = 0
+	right_wheel_rotating = 0
+	left_speed_pct = 0
+	right_speed_pct = 0
 
 def open_grip():
 	ser.write(b'6')
@@ -88,17 +106,8 @@ def to_radians(deg):
 def to_degrees(rad):
 	return rad * 180/3.14159
 
-def updatePosition(est_pose_x, est_pose_y, est_theta):
+def updatePosition():
 	#Add if condition when we get the ArUco working
-	robot_speed = 0.0278
-	cycle_time = .100 
-	axle_diameter = 0.0865
-	pi = 3.14159
-	left_speed_pct = 0
-	right_speed_pct = 90
-	
-	left_wheel_rotating = 1
-	right_wheel_rotating = 1
 
 	est_pose_x += math.cos(to_radians(est_theta)) * \
 	cycle_time * robot_speed * ((left_wheel_rotating * left_speed_pct) + \
@@ -120,19 +129,20 @@ def updatePosition(est_pose_x, est_pose_y, est_theta):
 
 
 def main():
-	
-	while True:
-		uin = input('enter in control\n')
-		if uin == 'f':
-			move_forward()
-		elif uin == 'r':
-			repo()
-		elif uin == 'og':
-			open_grip()
-		elif uin == 's':
-			move_stop()
-		elif uin == 'l':
-			follow_line()
+	updatePosition()
+
+	# while True:
+	# 	uin = input('enter in control\n')
+	# 	if uin == 'f':
+	# 		move_forward()
+	# 	elif uin == 'r':
+	# 		repo()
+	# 	elif uin == 'og':
+	# 		open_grip()
+	# 	elif uin == 's':
+	# 		move_stop()
+	# 	elif uin == 'l':
+	# 		follow_line()
 
 
 if __name__ == '__main__':
