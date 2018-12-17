@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def stream_to_program_mac(run_program):
  
-  cap = cv2.VideoCapture(0)
+  cap = cv2.VideoCapture(1)
   # cap.set(3, 640)
   # cap.set(4, 420)
 
@@ -131,7 +131,7 @@ def count_fingers(img):
   _, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
   if len(contours) < 1:
     # if no contours, return early
-    return finger_count, None, None
+    return finger_count, defect_to_hull, beta
 
   # hand contour should be the bigest contour
   hand_contour = list(sorted(contours, key=lambda x: len(x)))[-1]
@@ -173,15 +173,17 @@ def count_fingers(img):
   return finger_count, defect_to_hull, beta
 
 def display(img, d2h, beta):
-  for i in range(len(d2h)):
-    p1, p2, p3 = d2h[i]
-    cv2.circle(img, (p1[0], p1[1]), 15, (255,255,0), -1)
-    cv2.circle(img, (p2[0], p2[1]), 15, (255,0,255), -1)
-    cv2.putText(img, '{} deg.'.format(beta[i]), (p2[0], p2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2, cv2.LINE_AA)
-    cv2.line(img,(p1[0],p1[1]),(p2[0],p2[1]),(0,255,255),5)
-    cv2.line(img,(p2[0],p2[1]),(p3[0],p3[1]),(255,255,0),5)
+  finger_count = 0
+  if len(d2h) > 0 and len(beta) > 0:
+    for i in range(len(d2h)):
+      p1, p2, p3 = d2h[i]
+      cv2.circle(img, (p1[0], p1[1]), 15, (255,255,0), -1)
+      cv2.circle(img, (p2[0], p2[1]), 15, (255,0,255), -1)
+      cv2.putText(img, '{} deg.'.format(beta[i]), (p2[0], p2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2, cv2.LINE_AA)
+      cv2.line(img,(p1[0],p1[1]),(p2[0],p2[1]),(0,255,255),5)
+      cv2.line(img,(p2[0],p2[1]),(p3[0],p3[1]),(255,255,0),5)
 
-  finger_count = sum(list(map(lambda x: int(x > 8 and x < 50), beta)))
+    finger_count = sum(list(map(lambda x: int(x > 8 and x < 50), beta)))
   cv2.putText(img, 'FINGER COUNT: {}'.format(finger_count), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 2, cv2.LINE_AA)
 
   return img
