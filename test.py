@@ -1,5 +1,5 @@
 import serial
-ser = serial.Serial('/dev/cu.ArcBotics-DevB', 9600)
+ser = serial.Serial('/dev/cu.usbmodem14311', 9600)
 # ser = serial.Serial('/dev/cu.Bluetooth-Incoming-Port', 9600)
 import time
 from time import sleep
@@ -8,35 +8,47 @@ import math
 est_pose_x = 0 #set the previous known location here
 est_pose_y = 0 #set the previous known location here
 est_theta = 0 #set the previous known theta here
-left_wheel_rotating = 0
-right_wheel_rotating = 0
+left_wheel_rotating = 1
+right_wheel_rotating = 1
 robot_speed = 0.0278
 cycle_time = .100 
 axle_diameter = 0.0865
 pi = 3.14159
-left_speed_pct = 0
-right_speed_pct = 0
+left_speed_pct = 1
+right_speed_pct = 1
 
 #Functions to control sparki
 def move_forward():
+	global left_wheel_rotating
+	global right_wheel_rotating
 	ser.write(b'1')
 	left_wheel_rotating = 1
 	right_wheel_rotating = 1
 
 def move_backward():
+	global left_wheel_rotating
+	global right_wheel_rotating
 	ser.write(b'2')
 
 def move_right():
+	global left_wheel_rotating
+	global right_wheel_rotating
 	ser.write(b'3')
 	left_wheel_rotating = 1
 	right_wheel_rotating = 0
 
 def move_left():
+	global left_wheel_rotating
+	global right_wheel_rotating
 	ser.write(b'4')
 	left_wheel_rotating = 0
 	right_wheel_rotating = 1
 
 def move_stop():
+	global left_wheel_rotating
+	global right_wheel_rotating
+	global left_speed_pct
+	global right_speed_pct
 	ser.write(b'5')
 	left_wheel_rotating = 0
 	right_wheel_rotating = 0
@@ -109,6 +121,18 @@ def to_degrees(rad):
 def updatePosition():
 	#Add if condition when we get the ArUco working
 
+	global est_pose_x
+	global est_pose_y
+	global est_theta
+	global left_wheel_rotating
+	global right_wheel_rotating
+	global right_speed_pct
+	global left_speed_pct
+	global robot_speed
+	global cycle_time
+	global axle_diameter
+
+
 	est_pose_x += math.cos(to_radians(est_theta)) * \
 	cycle_time * robot_speed * ((left_wheel_rotating * left_speed_pct) + \
 	(right_wheel_rotating * right_speed_pct))/2
@@ -123,26 +147,26 @@ def updatePosition():
 	(left_wheel_rotating * left_speed_pct)) * cycle_time * robot_speed)/axle_diameter
 	est_theta = round(est_theta, 3)
 
-	print("Estimated Pose X: ", est_pose_x, "\n")
-	print("Estimated Pose Y: ", est_pose_y, "\n")
-	print("Estimated Theta: ", est_theta, "\n")
+	print("Pose X: ", est_pose_x, end=' ')
+	print("Pose Y: ", est_pose_y, end=' ')
+	print("Pose T: ", est_theta, '\r', end='')
 
 
 def main():
-	updatePosition()
 
-	# while True:
-	# 	uin = input('enter in control\n')
-	# 	if uin == 'f':
-	# 		move_forward()
-	# 	elif uin == 'r':
-	# 		repo()
-	# 	elif uin == 'og':
-	# 		open_grip()
-	# 	elif uin == 's':
-	# 		move_stop()
-	# 	elif uin == 'l':
-	# 		follow_line()
+	while True:
+		updatePosition()
+		# uin = input('enter in control\n')
+		# if uin == 'f':
+		# 	move_forward()
+		# elif uin == 'r':
+		# 	repo()
+		# elif uin == 'og':
+		# 	open_grip()
+		# elif uin == 's':
+		# 	move_stop()
+		# elif uin == 'l':
+		# 	follow_line()
 
 
 if __name__ == '__main__':
