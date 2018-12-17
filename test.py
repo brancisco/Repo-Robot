@@ -1,3 +1,5 @@
+import finger_counter
+
 import serial
 ser = serial.Serial('/dev/cu.usbmodem14201', 9600)
 # ser = serial.Serial('/dev/cu.Bluetooth-Incoming-Port', 9600)
@@ -18,6 +20,16 @@ import math
 # right_speed_pct = 1
 
 #Functions to control sparki
+def move_stop():
+	# global left_wheel_rotating
+	# global right_wheel_rotating
+	# global left_speed_pct
+	# global right_speed_pct
+	ser.write(b'0')
+	# left_wheel_rotating = 0
+	# right_wheel_rotating = 0
+	# left_speed_pct = 0
+	# right_speed_pct = 0
 def move_forward():
 	# global left_wheel_rotating
 	# global right_wheel_rotating
@@ -44,22 +56,11 @@ def move_right():
 # 	left_wheel_rotating = 0
 # 	right_wheel_rotating = 1
 
-def move_stop():
-	# global left_wheel_rotating
-	# global right_wheel_rotating
-	# global left_speed_pct
-	# global right_speed_pct
-	ser.write(b'4')
-	# left_wheel_rotating = 0
-	# right_wheel_rotating = 0
-	# left_speed_pct = 0
-	# right_speed_pct = 0
-
 def open_grip():
-	ser.write(b'5')
+	ser.write(b'4')
 
 def close_grip():
-	ser.write(b'6')
+	ser.write(b'5')
 
 # def follow_line():
 # 	ser.write(b'8')
@@ -150,25 +151,29 @@ def close_grip():
 # 	print("Pose X: ", est_pose_x, end=' ')
 # 	print("Pose Y: ", est_pose_y, end=' ')
 # 	print("Pose T: ", est_theta, '\r', end='')
+def get_state(img):
+	state = str[count_fingers(img)]
+	# uin = input('enter in control: \n')
+	if state == '0':
+		move_stop()
+	elif state == '1':
+		move_forward()
+	elif state == '2':
+		move_backward()
+	elif state == '3':
+		move_right()
+	elif state == '4':
+		close_grip()
+	elif state == '5':
+		open_grip()
 
 
 def main():
 
-	while True:
-		uin = input('enter in control: \n')
-		if uin == 'f':
-			move_forward()
-		elif uin == 'b':
-			move_backward()
-		elif uin == 'r':
-			move_right()
-		elif uin == 's':
-			move_stop()
-		elif uin == 'og':
-			open_grip()
-		elif uin == 'cg':
-			close_grip()
-
+	stream_to_program_mac(get_state)
+	# while True:
+	
+		
 
 if __name__ == '__main__':
 	main()
