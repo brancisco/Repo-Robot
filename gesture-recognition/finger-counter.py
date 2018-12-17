@@ -126,10 +126,12 @@ def get_betas(defect_to_hulls):
 def count_fingers(img):
   max_cluster_dist = 100
   finger_count  = 0
+  defect_to_hull = []
+  beta = []
   _, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
   if len(contours) < 1:
     # if no contours, return early
-    return finger_count
+    return finger_count, None, None
 
   # hand contour should be the bigest contour
   hand_contour = list(sorted(contours, key=lambda x: len(x)))[-1]
@@ -168,9 +170,21 @@ def count_fingers(img):
 
     finger_count = sum(list(map(lambda x: int(x > 8 and x < 50), beta)))
 
-  return finger_count
+  return finger_count, defect_to_hull, beta
 
+def display(img, d2h, beta):
+  for i in range(len(d2h)):
+    p1, p2, p3 = d2h[i]
+    cv2.circle(img, (p1[0], p1[1]), 15, (255,255,0), -1)
+    cv2.circle(img, (p2[0], p2[1]), 15, (255,0,255), -1)
+    cv2.putText(img, '{} deg.'.format(beta[i]), (p2[0], p2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2, cv2.LINE_AA)
+    cv2.line(img,(p1[0],p1[1]),(p2[0],p2[1]),(0,255,255),5)
+    cv2.line(img,(p2[0],p2[1]),(p3[0],p3[1]),(255,255,0),5)
 
+  finger_count = sum(list(map(lambda x: int(x > 8 and x < 50), beta)))
+  cv2.putText(img, 'FINGER COUNT: {}'.format(finger_count), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 2, cv2.LINE_AA)
+
+  return img
 
 def pre_process_img(img):
   """
@@ -184,9 +198,13 @@ def pre_process_img(img):
   return img
 
 def fingers_on_command_line(img):
-  
-  img = pre_process_img(img)
-  f_count = count_fingers(img)
+  imgo = img
+  img = pre_process_img(imgo)
+  f_count, d2h, beta = count_fingers(img)
+
+  display(imgo, d2h, beta)
+  cv2.imshow('img', imgo)
+
   print('Number of Fingers', f_count)
 
 def main():
