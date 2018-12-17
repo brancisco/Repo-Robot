@@ -3,9 +3,9 @@ import cv2
 from os.path import join
 import matplotlib.pyplot as plt
 
-def stream_to_program_mac(run_program):
+def stream_to_program_mac(run_program, ith_cam=0):
  
-  cap = cv2.VideoCapture(1)
+  cap = cv2.VideoCapture(ith_cam)
   # cap.set(3, 640)
   # cap.set(4, 420)
 
@@ -203,14 +203,13 @@ def fingers_on_command_line(img):
   imgo = img
   img = pre_process_img(imgo)
   f_count, d2h, beta = count_fingers(img)
-
   display(imgo, d2h, beta)
   cv2.imshow('img', imgo)
-
+  
   print('Number of Fingers', f_count)
 
 def main():
-  stream_to_program_mac(fingers_on_command_line)
+  stream_to_program_mac(fingers_on_command_line, ith_cam=1)
 
 if __name__ == '__main__':
   main()

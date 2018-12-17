@@ -1,4 +1,4 @@
-import finger_counter
+import FingerCounter
 
 import serial
 ser = serial.Serial('/dev/cu.usbmodem14201', 9600)
