@@ -1,4 +1,4 @@
-import FingerCounter
+from FingerCounter import *
 
 import serial
 ser = serial.Serial('/dev/cu.usbmodem14201', 9600)
@@ -57,10 +57,10 @@ def move_right():
 # 	right_wheel_rotating = 1
 
 def open_grip():
-	ser.write(b'4')
+	ser.write(b'5')
 
 def close_grip():
-	ser.write(b'5')
+	ser.write(b'4')
 
 # def follow_line():
 # 	ser.write(b'8')
@@ -152,8 +152,17 @@ def close_grip():
 # 	print("Pose Y: ", est_pose_y, end=' ')
 # 	print("Pose T: ", est_theta, '\r', end='')
 def get_state(img):
-	state = str[count_fingers(img)]
+	imgo = img
+	img = pre_process_img(img)
+	state, d2h, beta = count_fingers(img)
+	state =str(state)
+	display(imgo, d2h, beta)
+	cv2.imshow('img', imgo)
+	
+	# print(state)
 	# uin = input('enter in control: \n')
+	print(state)
+
 	if state == '0':
 		move_stop()
 	elif state == '1':
@@ -166,7 +175,7 @@ def get_state(img):
 		close_grip()
 	elif state == '5':
 		open_grip()
-
+	sleep(.1)
 
 def main():
 
