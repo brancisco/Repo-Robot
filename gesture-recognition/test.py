@@ -1,4 +1,5 @@
-from FingerCounter import *
+
+
 
 import serial
 ser = serial.Serial('/dev/cu.usbmodem14201', 9600)
@@ -57,10 +58,10 @@ def move_right():
 # 	right_wheel_rotating = 1
 
 def open_grip():
-	ser.write(b'5')
+	ser.write(b'4')
 
 def close_grip():
-	ser.write(b'4')
+	ser.write(b'5')
 
 # def follow_line():
 # 	ser.write(b'8')
@@ -151,37 +152,26 @@ def close_grip():
 # 	print("Pose X: ", est_pose_x, end=' ')
 # 	print("Pose Y: ", est_pose_y, end=' ')
 # 	print("Pose T: ", est_theta, '\r', end='')
-def get_state(img):
-	imgo = img
-	img = pre_process_img(img)
-	state, d2h, beta = count_fingers(img)
-	state =str(state)
-	display(imgo, d2h, beta)
-	cv2.imshow('img', imgo)
+def get_state():
+	return
 	
-	# print(state)
-	# uin = input('enter in control: \n')
-	print(state)
-
-	if state == '0':
-		move_stop()
-	elif state == '1':
-		move_forward()
-	elif state == '2':
-		move_backward()
-	elif state == '3':
-		move_right()
-	elif state == '4':
-		close_grip()
-	elif state == '5':
-		open_grip()
-	sleep(.1)
 
 def main():
 
-	stream_to_program_mac(get_state)
-	# while True:
-	
+	while True:
+		uin = input('enter in control: \n')
+		if uin == 's':
+			move_stop()
+		elif uin == 'f':
+			move_forward()
+		elif uin == 'b':
+			move_backward()
+		elif uin == 'r':
+			move_right()
+		elif uin == 'cg':
+			close_grip()
+		elif uin == 'og':
+			open_grip()
 		
 
 if __name__ == '__main__':

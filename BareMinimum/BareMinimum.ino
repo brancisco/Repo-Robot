@@ -4,45 +4,51 @@
 #define EMPTY ' '
 
 char STATE;
-
-void beepboop() {
-int melody[] = { NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7 };
-int noteDurations[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
-for (int thisNote = 0; thisNote < 8; thisNote++) {
-  if(thisNote % 2 == 0){
-    sparki.RGB(RGB_RED);
-    }
-    else {
-      sparki.RGB(RGB_BLUE);
-      }
-      int noteDuration = 1000/noteDurations[thisNote];
-//      sparki.beep(melody[thisNote],noteDuration);
-      int pauseBetweenNotes = noteDuration * 1.30;
-      delay(pauseBetweenNotes);
-      // stop the tone playing:
-//      sparki.noBeep();
-      sparki.RGB(RGB_OFF);
-      }
-}
+int inByte = EMPTY;
+//void beepboop() {
+//int melody[] = { NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7, NOTE_FS6, NOTE_C7 };
+//int noteDurations[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
+//for (int thisNote = 0; thisNote < 8; thisNote++) {
+//  if(thisNote % 2 == 0){
+//    sparki.RGB(RGB_RED);
+//    }
+//    else {
+//      sparki.RGB(RGB_BLUE);
+//      }
+//      int noteDuration = 1000/noteDurations[thisNote];
+////      sparki.beep(melody[thisNote],noteDuration);
+//      int pauseBetweenNotes = noteDuration * 1.30;
+//      delay(pauseBetweenNotes);
+//      // stop the tone playing:
+////      sparki.noBeep();
+//      sparki.RGB(RGB_OFF);
+//      }
+//}
 
 void setup() {
   sparki.servo(SERVO_CENTER);
   Serial.begin(9600);
   sparki.clearLCD();
-  sparki.gripperOpen(3);
+//  sparki.gripperOpen();
 }
 
 void loop() {
   int obj_dist = sparki.ping();
-  char inByte = EMPTY;
   if (Serial.available()){ // only send data back if data has been sent
     inByte = Serial.read();
   }
-  if (inByte != EMPTY)
+  if (inByte != EMPTY){
     STATE = inByte;
+  }
   sparki.print(STATE);
   sparki.updateLCD();
   sparki.clearLCD();
+  
+  if(STATE == '0') {
+      sparki.print("Stop\n");
+      sparki.updateLCD();
+      sparki.moveStop();
+   }
   if(STATE == '1') {
       sparki.print("Forward\n");
       sparki.updateLCD();
@@ -63,27 +69,23 @@ void loop() {
 //      sparki.updateLCD();
 //      sparki.moveLeft();
 //   }
-   if(STATE == '4') {
-      sparki.print("Stop\n");
+  if(STATE == '4') {
+      sparki.print("Close Grip\n");
       sparki.updateLCD();
-      sparki.moveStop();
+//      beepboop();
+      sparki.gripperClose(1);
+//      STATE = '7';
    }
    if(STATE == '5') {
       sparki.print("Open Grip\n");
       sparki.updateLCD();
-      sparki.gripperOpen(3);
-      STATE = '7';
+      sparki.gripperOpen(1);
+//      STATE = '7';
    }
-   if(STATE == '6') {
-      sparki.print("Close Grip\n");
-      sparki.updateLCD();
-      beepboop();
-      sparki.gripperClose(4);
-      STATE = '7';
-   }
-   if (STATE == '7') {
-    
-    }
+  
+//   if (STATE == '7') {
+//    
+//    }
 //   if(STATE == '8') {
 //      sparki.print("Following Line :)\n");
 //      // follow_line();
