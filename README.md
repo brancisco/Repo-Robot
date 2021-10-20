@@ -2,6 +2,16 @@
 
 Robotics project at CU. Using ArcBotics Sparki robot, we are repoing toy cars that haven't payed for parking.
 
+We used Open CV to calculate how many fingers we held up. The processed result would be sent over bluetooth to sparky as an integer. Sparky would then follow one of the commands mapped to that integer.
+
+## Some Example Images
+
+![Example Calculations](./figures/CalculationExample.png)
+
+![Grab Car](./figures/GrabCar.png)
+
+![Move Sparky](./figures/MoveSparky.png)
+
 ## Steps of our calculations
 
 **Step 1**
